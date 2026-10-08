@@ -9,6 +9,19 @@ import logging
 import sys
 
 
+# ---------------------------------------------------------------------------
+# MCP 2026-07-28 wire - header-add migration ({DATE})
+# ---------------------------------------------------------------------------
+# stdio carries no HTTP headers, so Mcp-Method / Mcp-Name are not applicable to
+# this transport at runtime. When {repo} is exposed over HTTP, route the ingress
+# through the vendored mcp2026_shim (ShimASGI): it validates Mcp-Method /
+# Mcp-Name, injects params._meta.protocolVersion = "2026-07-28" into every
+# request, strips Mcp-Session-Id and answers legacy initialize / server-discover
+# locally (the session header is never emitted - stateless wire).
+# Refs: MIGRATION_NOTE.md, MCP_2026_WIRE_MIGRATION_PLAN_2026-10-07.md (3) + (4).
+# ---------------------------------------------------------------------------
+
+
 def main() -> None:
     try:
         import mcp  # noqa: F401
